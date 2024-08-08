@@ -76,13 +76,10 @@ public class SocialMediaController {
      */
     @PostMapping("/login")
     public ResponseEntity<Account> login(@RequestBody Account account) {
-        Account oAccount = accountService.loginAccount(account);
-
-        if (oAccount != null) {
-            // account logged in!
-            return ResponseEntity.status(HttpStatus.OK).body(oAccount);
-        } else {
-            // login failed
+        try {
+            Account oAccount = accountService.loginAccount(account);
+            return ResponseEntity.status(HttpStatus.OK).body(oAccount); 
+        } catch (AccountNotFoundException anfe) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
