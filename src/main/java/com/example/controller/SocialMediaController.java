@@ -35,7 +35,7 @@ public class SocialMediaController {
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<Account> headers(@RequestBody Account account){
+    public ResponseEntity<Account> register(@RequestBody Account account){
         // reject if username is blank
         if (account.getUsername().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
