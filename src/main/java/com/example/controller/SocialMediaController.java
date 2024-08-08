@@ -1,18 +1,13 @@
 package com.example.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.entity.Account;
-import com.example.entity.Message;
-import com.example.exception.AccountNotFoundException;
-import com.example.exception.InvalidMessageException;
-import com.example.service.AccountService;
-import com.example.service.MessageService;
+import com.example.entity.*;
+import com.example.exception.*;
+import com.example.service.*;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -48,11 +43,11 @@ public class SocialMediaController {
     public ResponseEntity<Account> register(@RequestBody Account account) {
         // reject if username is blank
         if (account.getUsername().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new InvalidAccountException("Username cannot be blank.");
         }
         // reject if password is less than 4 characters long
         if (account.getPassword().length() < 4) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // no error message :(
+            throw new InvalidAccountException("Password must be longer than 4 characters.");
         }
         // reject if username already exists
         try {
@@ -106,16 +101,15 @@ public class SocialMediaController {
      */
     @PostMapping("/messages")
     public ResponseEntity<Message> submitMessage(@RequestBody Message message) 
-        throws AccountNotFoundException
     {
         // reject if messageText is blank
         if (message.getMessageText().isBlank()) {
-            throw new InvalidMessageException("Username is blank.");
+            throw new InvalidMessageException("Message cannot be blank.");
         }
         // reject if messageText is over 255 characters
         if (message.getMessageText().length() > 255) {
             // what is this, X, formerly Twitter? <- what is this, a reused joke?
-            throw new InvalidMessageException("Message is too long. (Max 255 characters)");  
+            throw new InvalidMessageException("Message cannot exceed 255 characters long.");  
         }
         // reject if user does not exist
         accountService.findAccount(message.getPostedBy());  // throws if account not found
@@ -132,10 +126,18 @@ public class SocialMediaController {
     }
 
     /**
-     * In the case of an invalid messsage creation attempt, the handler will respond with the status 400 (Client error).
+     * In the case of an invalid account/message creation attempt, the handler will respond with the status 400 (Client error).
      */
-    @ExceptionHandler({InvalidMessageException.class})
-    public ResponseEntity<String> handleInvalidMessage(InvalidMessageException ime) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ime.getMessage());
+    @ExceptionHandler({InvalidAccountException.class, InvalidMessageException.class})
+    public ResponseEntity<String> handleInvalidCreation(RuntimeException re) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re.getMessage());
     }
+
+    /**
+     * A generalized handler for miscellaneous error cases.
+     */
+    // @ExceptionHandler({RuntimeException.class})
+    // public ResponseEntity<String> handleMisc(RuntimeException re) {
+    //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re.getMessage());
+    // }
 }

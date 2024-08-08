@@ -29,5 +29,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
      * @param password The password to match.
      * @return the Account that matches the given username, otherwise null (hopefully)
      */
-    Account findAccountByUsernameAndPassword(String username, String password);
+    Optional<Account> findAccountByUsernameAndPassword(String username, String password);
 }

@@ -47,12 +47,14 @@ public class AccountService {
     }
 
     /**
-     * Log in a 
+     * Checks if an account exists that matches the username and password of a given Account.
      * 
-     * @param account
-     * @return
+     * @param account The account to 
+     * @return the Account that matches the given username
+     * @throws AccountNotFoundException
      */
     public Account loginAccount(Account account) {
-        return accountRepository.findAccountByUsernameAndPassword(account.getUsername(), account.getPassword());
+        return accountRepository.findAccountByUsernameAndPassword(account.getUsername(), account.getPassword())
+                                .orElseThrow(() -> new AccountNotFoundException());
     }
 }
