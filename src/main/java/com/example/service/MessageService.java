@@ -1,6 +1,7 @@
 package com.example.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,10 +51,31 @@ public class MessageService {
      */
     public int deleteMessage(int id) {
         if (messageRepository.findById(id).isEmpty()) {
-            return 0;
+            return 0;  // message does not exist
         }
 
         messageRepository.deleteById(id);
+        return 1;
+    }
+
+    /**
+     * Updates a specific message with the given messageText.
+     * 
+     * @param id The messageId to search for.
+     * @param messageText The text to replace the content of the message with.
+     * @return 1 if the message was updated, 0 if the message with the given messageId did not exist
+     */
+    public int updateMessage(int id, String messageText) {
+        Optional<Message> oMessage = messageRepository.findById(id);
+
+        if (oMessage.isEmpty()) {
+            return 0;  // message does not exist
+        }
+
+        Message newMessage = oMessage.get();
+        newMessage.setMessageText(messageText);
+        messageRepository.save(newMessage);
+
         return 1;
     }
 }

@@ -168,6 +168,44 @@ public class SocialMediaController {
         return ResponseEntity.status(HttpStatus.OK).body(result == 0 ? null : result);
     }
 
+    /**
+     * PATCH /messages/{messageId}. 
+     * 
+     * Update a message by its messageId.
+     * 
+     * The request body should contain a new messageText values to replace the message identified by messageId. The request body 
+     * can not be guaranteed to contain any other information.
+     * 
+     * The update of a message should be successful if and only if the message id already exists and the new messageText is 
+     * not blank and is not over 255 characters. If the update is successful, the response body should contain the number of 
+     * rows updated (1), and the response status should be 200, which is the default. The message existing on the database 
+     * should have the updated messageText.
+     * If the update of the message is not successful for any reason, the response status should be 400. (Client error)
+     * 
+     * @param messageId The messageId of the message to delete.
+     * @return
+     */
+    @PatchMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> updateMessage(@PathVariable int messageId, @RequestBody Message message) {
+        // assumption: request body contains a Message object, not a String
+        // reject if messageText is blank
+        if (message.getMessageText().isBlank()) {
+            throw new InvalidMessageException("Message cannot be blank.");
+        }
+        // reject if messageText is over 255 characters
+        if (message.getMessageText().length() > 255) {
+            // what is this, X, formerly Twitter? <- what is this, a reused joke?
+            throw new InvalidMessageException("Message cannot exceed 255 characters long.");  
+        }
+
+        int result = messageService.updateMessage(messageId, message.getMessageText());
+        if (result > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
 
 
     /**
