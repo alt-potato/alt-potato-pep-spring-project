@@ -18,8 +18,8 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     /**
      * This query will return a list of messages posted by a specific accountId. Hopefully.
      * 
-     * @param username The username to search for.
-     * @return the Account that matches the given username, otherwise null (hopefully)
+     * @param postedBy The accountId to search for.
+     * @return A list of messages posted by the account with the given id.
      */
     List<Message> findMessageByPostedBy(int postedBy);
 }
