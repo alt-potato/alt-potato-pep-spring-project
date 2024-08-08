@@ -31,4 +31,14 @@ public class MessageService {
     public List<Message> getAllMessages() {
         return messageRepository.findAll();
     }
+
+    /**
+     * Gets a specific message by its messageId
+     * 
+     * @param id The messageId to search for.
+     * @return the Message with the given messageId, or null if not found
+     */
+    public Message getMessage(int id) {
+        return messageRepository.findById(id).orElse(null);
+    }
 }

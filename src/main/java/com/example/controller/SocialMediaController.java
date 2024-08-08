@@ -118,6 +118,8 @@ public class SocialMediaController {
     /**
      * GET /messages
      * 
+     * Get a list of all messages.
+     * 
      * The response body should contain a JSON representation of a list containing all messages retrieved from the database. 
      * It is expected for the list to simply be empty if there are no messages. The response status should always be 200, 
      * which is the default.
@@ -129,7 +131,24 @@ public class SocialMediaController {
         return ResponseEntity.status(HttpStatus.OK).body(messageService.getAllMessages());
     }
 
+    /**
+     * GET /messages/{messageId}
+     * 
+     * Gets a specific message by its messageId.
+     * 
+     * The response body should contain a JSON representation of the message identified by the messageId. It is expected for 
+     * the response body to simply be empty if there is no such message. The response status should always be 200, which 
+     * is the default.
+     * 
+     * @param messageId The messageId of the message to find.
+     * @return
+     */
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<Message> getMessage(@PathVariable int messageId) {
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.getMessage(messageId));
+    }
 
+    
 
     /**
      * If an interaction is attempted with a nonexistent account, the handler will respond with the status 400 (Client error).
@@ -140,7 +159,7 @@ public class SocialMediaController {
     }
 
     /**
-     * In the case of an invalid account/message creation attempt, the handler will respond with the status 400 (Client error).
+     * In the case of an invalid account/message access, the handler will respond with the status 400 (Client error).
      */
     @ExceptionHandler({InvalidAccountException.class, InvalidMessageException.class})
     public ResponseEntity<String> handleInvalidCreation(RuntimeException re) {
