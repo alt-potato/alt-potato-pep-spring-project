@@ -8,7 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.entity.Account;
+import com.example.entity.Message;
+import com.example.exception.AccountNotFoundException;
+import com.example.exception.InvalidMessageException;
 import com.example.service.AccountService;
+import com.example.service.MessageService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -20,6 +24,9 @@ import com.example.service.AccountService;
 public class SocialMediaController {
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    MessageService messageService;
 
     /**
      * POST /register
@@ -35,6 +42,7 @@ public class SocialMediaController {
      * 
      * @param account The account to register
      * @return
+     * @throws javax.security.auth.login.AccountNotFoundException 
      */
     @PostMapping("/register")
     public ResponseEntity<Account> register(@RequestBody Account account) {
@@ -47,8 +55,12 @@ public class SocialMediaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // no error message :(
         }
         // reject if username already exists
-        if (accountService.findAccount(account.getUsername()) != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        try {
+            // there's got to be a better way to do this
+            accountService.findAccount(account.getUsername());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);  
+        } catch (AccountNotFoundException anfe) {
+            ;
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(accountService.registerAccount(account));
@@ -78,5 +90,52 @@ public class SocialMediaController {
             // login failed
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+    }
+
+    /**
+     * POST /messages
+     * 
+     * Submit a new post. The request body will contain a JSON representation of a message, which should be persisted to the 
+     * database, but will not contain a messageId.
+     * 
+     * The creation of the message will be successful if and only if the messageText is not blank, is not over 255 characters, 
+     * and postedBy refers to a real, existing user. If successful, the response body should contain a JSON of the message, 
+     * including its messageId. The response status should be 200, which is the default. The new message should be persisted 
+     * to the database.
+     * If the creation of the message is not successful, the response status should be 400. (Client error)
+     */
+    @PostMapping("/messages")
+    public ResponseEntity<Message> submitMessage(@RequestBody Message message) 
+        throws AccountNotFoundException
+    {
+        // reject if messageText is blank
+        if (message.getMessageText().isBlank()) {
+            throw new InvalidMessageException("Username is blank.");
+        }
+        // reject if messageText is over 255 characters
+        if (message.getMessageText().length() > 255) {
+            // what is this, X, formerly Twitter? <- what is this, a reused joke?
+            throw new InvalidMessageException("Message is too long. (Max 255 characters)");  
+        }
+        // reject if user does not exist
+        accountService.findAccount(message.getPostedBy());  // throws if account not found
+
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.submitMessage(message));
+    }
+
+    /**
+     * If an interaction is attempted with a nonexistent account, the handler will respond with the status 400 (Client error).
+     */
+    @ExceptionHandler({AccountNotFoundException.class})
+    public ResponseEntity<String> handleAccountNotFound(AccountNotFoundException anfe) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Account not found.");
+    }
+
+    /**
+     * In the case of an invalid messsage creation attempt, the handler will respond with the status 400 (Client error).
+     */
+    @ExceptionHandler({InvalidMessageException.class})
+    public ResponseEntity<String> handleInvalidMessage(InvalidMessageException ime) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ime.getMessage());
     }
 }

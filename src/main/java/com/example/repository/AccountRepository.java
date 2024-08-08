@@ -1,5 +1,7 @@
 package com.example.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.entity.Account;
@@ -11,14 +13,14 @@ import com.example.entity.Account;
  *   password varchar(255)
 ```
  */
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account, Integer> {
     /**
      * This query will return the Account that matches a certain given username String.
      * 
      * @param username The username to search for.
      * @return the Account that matches the given username, otherwise null (hopefully)
      */
-    Account findAccountByUsername(String username);
+    Optional<Account> findAccountByUsername(String username);
 
     /**
      * This query will return the Account that matches a certain given username String and password String.
