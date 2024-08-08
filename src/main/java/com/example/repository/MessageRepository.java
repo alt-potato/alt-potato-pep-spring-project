@@ -16,7 +16,7 @@ import com.example.entity.Message;
  */
 public interface MessageRepository extends JpaRepository<Message, Integer> {
     /**
-     * This query will return a list of messages posted by a specific accountId. Hopefully.
+     * This query will return a list of messages posted by a specific accountId. 
      * 
      * @param postedBy The accountId to search for.
      * @return A list of messages posted by the account with the given id.
