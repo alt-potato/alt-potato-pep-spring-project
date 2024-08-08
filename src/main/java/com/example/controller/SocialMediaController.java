@@ -238,12 +238,4 @@ public class SocialMediaController {
     public ResponseEntity<String> handleInvalidCreation(RuntimeException re) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re.getMessage());
     }
-
-    /**
-     * A generalized handler for miscellaneous error cases.
-     */
-    // @ExceptionHandler({RuntimeException.class})
-    // public ResponseEntity<String> handleMisc(RuntimeException re) {
-    //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(re.getMessage());
-    // }
 }
