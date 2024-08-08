@@ -19,4 +19,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      * @return the Account that matches the given username, otherwise null (hopefully)
      */
     Account findAccountByUsername(String username);
+
+    /**
+     * This query will return the Account that matches a certain given username String and password String.
+     * 
+     * @param username The username to search for.
+     * @param password The password to match.
+     * @return the Account that matches the given username, otherwise null (hopefully)
+     */
+    Account findAccountByUsernameAndPassword(String username, String password);
 }

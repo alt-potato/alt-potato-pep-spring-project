@@ -30,4 +30,8 @@ public class AccountService {
     public Account findAccount(String username) {
         return accountRepository.findAccountByUsername(username);
     }
+
+    public Account loginAccount(Account account) {
+        return accountRepository.findAccountByUsernameAndPassword(account.getUsername(), account.getPassword());
+    }
 }

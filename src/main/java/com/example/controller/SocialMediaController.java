@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,7 @@ public class SocialMediaController {
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<Account> register(@RequestBody Account account){
+    public ResponseEntity<Account> register(@RequestBody Account account) {
         // reject if username is blank
         if (account.getUsername().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -50,5 +52,31 @@ public class SocialMediaController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(accountService.registerAccount(account));
+    }
+
+    /**
+     * POST /login
+     * 
+     * Log in an account. The request body will contain a JSON representation of an Account.
+     * 
+     * The login will be successful if and only if the username and password provided in the request body JSON match a 
+     * real account existing on the database. If successful, the response body should contain a JSON of the account in 
+     * the response body, including its accountId. The response status should be 200 OK, which is the default.
+     * If the login is not successful, the response status should be 401. (Unauthorized)
+     * 
+     * @param account The account to log in, which does not need to include an accountId.
+     * @return
+     */
+    @PostMapping("/login")
+    public ResponseEntity<Account> login(@RequestBody Account account) {
+        Account oAccount = accountService.loginAccount(account);
+
+        if (oAccount != null) {
+            // account logged in!
+            return ResponseEntity.status(HttpStatus.OK).body(oAccount);
+        } else {
+            // login failed
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 }
