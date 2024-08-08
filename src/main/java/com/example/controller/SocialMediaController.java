@@ -1,5 +1,13 @@
 package com.example.controller;
 
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.entity.Account;
+import com.example.repository.AccountRepository;
+import com.example.service.AccountService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -7,6 +15,41 @@ package com.example.controller;
  * where applicable as well as the @ResponseBody and @PathVariable annotations. You should
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
+@RestController
 public class SocialMediaController {
+    @Autowired
+    AccountService accountService;
 
+    /**
+     * POST /register
+     * 
+     * Create a new Account. The body will contain a representation of a JSON Account, but will not contain an accountId.
+     * 
+     * The registration will be successful if and only if the username is not blank, the password is at least 4 characters long, 
+     * and an Account with that username does not already exist. If all these conditions are met, the response body should contain 
+     * a JSON of the Account, including its accountId. The response status should be 200 OK, which is the default. The new account 
+     * should be persisted to the database.
+     * If the registration is not successful due to a duplicate username, the response status should be 409. (Conflict)
+     * If the registration is not successful for some other reason, the response status should be 400. (Client error)
+     * 
+     * @param account The account to register
+     * @return
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Account> headers(@RequestBody Account account){
+        // reject if username is blank
+        if (account.getUsername().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        // reject if password is less than 4 characters long
+        if (account.getPassword().length() < 4) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // no error message :(
+        }
+        // reject if username already exists
+        if (accountService.findAccount(account.getUsername()) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.registerAccount(account));
+    }
 }
