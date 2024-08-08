@@ -148,7 +148,27 @@ public class SocialMediaController {
         return ResponseEntity.status(HttpStatus.OK).body(messageService.getMessage(messageId));
     }
 
-    
+    /**
+     * DELETE /messages/{messageId}.
+     * 
+     * Delete a specific message by its messageId.
+     * 
+     * The deletion of an existing message should remove an existing message from the database. If the message existed, the 
+     * response body should contain the number of rows updated (1). The response status should be 200, which is the default.
+     * If the message did not exist, the response status should be 200, but the response body should be empty. This is because 
+     * the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond with the same 
+     * type of response.
+     * 
+     * @param messageId The messageId of the message to delete.
+     * @return
+     */
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessage(@PathVariable int messageId) {
+        int result = messageService.deleteMessage(messageId);
+        return ResponseEntity.status(HttpStatus.OK).body(result == 0 ? null : result);
+    }
+
+
 
     /**
      * If an interaction is attempted with a nonexistent account, the handler will respond with the status 400 (Client error).

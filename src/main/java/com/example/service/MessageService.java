@@ -33,12 +33,27 @@ public class MessageService {
     }
 
     /**
-     * Gets a specific message by its messageId
+     * Gets a specific message by its messageId.
      * 
      * @param id The messageId to search for.
      * @return the Message with the given messageId, or null if not found
      */
     public Message getMessage(int id) {
         return messageRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * Deletes a specific message by its messageId.
+     * 
+     * @param id The messageId to search for.
+     * @return 1 if the message was deleted, 0 if the message with the given messageId did not exist
+     */
+    public int deleteMessage(int id) {
+        if (messageRepository.findById(id).isEmpty()) {
+            return 0;
+        }
+
+        messageRepository.deleteById(id);
+        return 1;
     }
 }
