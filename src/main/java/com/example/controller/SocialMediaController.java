@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,8 +99,7 @@ public class SocialMediaController {
      * If the creation of the message is not successful, the response status should be 400. (Client error)
      */
     @PostMapping("/messages")
-    public ResponseEntity<Message> submitMessage(@RequestBody Message message) 
-    {
+    public ResponseEntity<Message> submitMessage(@RequestBody Message message) {
         // reject if messageText is blank
         if (message.getMessageText().isBlank()) {
             throw new InvalidMessageException("Message cannot be blank.");
@@ -113,6 +114,22 @@ public class SocialMediaController {
 
         return ResponseEntity.status(HttpStatus.OK).body(messageService.submitMessage(message));
     }
+
+    /**
+     * GET /messages
+     * 
+     * The response body should contain a JSON representation of a list containing all messages retrieved from the database. 
+     * It is expected for the list to simply be empty if there are no messages. The response status should always be 200, 
+     * which is the default.
+     * 
+     * @return
+     */
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getMessages() {
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.getAllMessages());
+    }
+
+
 
     /**
      * If an interaction is attempted with a nonexistent account, the handler will respond with the status 400 (Client error).
