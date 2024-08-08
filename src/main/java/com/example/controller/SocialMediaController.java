@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.entity.Account;
-import com.example.repository.AccountRepository;
 import com.example.service.AccountService;
 
 /**
