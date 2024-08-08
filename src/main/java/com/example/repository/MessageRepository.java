@@ -1,5 +1,7 @@
 package com.example.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.entity.Message;
@@ -13,4 +15,11 @@ import com.example.entity.Message;
  *   foreign key (postedBy) references Account(accountId)
  */
 public interface MessageRepository extends JpaRepository<Message, Integer> {
+    /**
+     * This query will return a list of messages posted by a specific accountId. Hopefully.
+     * 
+     * @param username The username to search for.
+     * @return the Account that matches the given username, otherwise null (hopefully)
+     */
+    List<Message> findMessageByPostedBy(int postedBy);
 }

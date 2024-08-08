@@ -34,6 +34,15 @@ public class MessageService {
     }
 
     /**
+     * 
+     * @param accountId
+     * @return
+     */
+    public List<Message> getAllMessages(int accountId) {
+        return messageRepository.findMessageByPostedBy(accountId);
+    }
+
+    /**
      * Gets a specific message by its messageId.
      * 
      * @param id The messageId to search for.
